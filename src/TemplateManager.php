@@ -47,10 +47,7 @@ class TemplateManager
     **** Si elle en trouve un, elle le remplace et retourne le texte 
     ***/
     private function computeText($text, array $data)
-    {
-        $APPLICATION_CONTEXT = ApplicationContext::getInstance();
-
-        
+    { 
         $containsSummaryHtml = strpos($text, '[quote:summary_html]');
         $containsSummary     = strpos($text, '[quote:summary]');
         $containsDestinationName = strpos($text, '[quote:destination_name]');
@@ -72,9 +69,9 @@ class TemplateManager
             $text = str_replace('[quote:destination_link]', '', $text);
         }
 
-        $_user  = (isset($data['user'])  and ($data['user']  instanceof User))  ? $data['user']  : $APPLICATION_CONTEXT->getCurrentUser();
-        if($_user) {
-            (strpos($text, '[user:first_name]') !== false) and $text = str_replace('[user:first_name]'       , ucfirst(mb_strtolower($_user->firstname)), $text);
+        if (strpos($text, '[user:first_name]') !== false) {
+            $_user = (isset($data['user'])  and ($data['user']  instanceof User))  ? $data['user']  : ApplicationContext::getInstance()->getCurrentUser();
+            $text = str_replace('[user:first_name]', ucfirst(mb_strtolower($_user->firstname)), $text);
         }
 
         return $text;
