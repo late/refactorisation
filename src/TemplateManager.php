@@ -22,6 +22,10 @@ class TemplateManager
         return $replaced;
     }
 
+    /***
+    **** Cette fonction a pour but d'initialiser les attributs utilises par la classe
+    **** Il ne doit pas y avoir de remplacement fait ici
+    ***/
     private function init(array $data)
     {
         $quote = (isset($data['quote']) and $data['quote'] instanceof Quote) ? $data['quote'] : null;
@@ -38,33 +42,36 @@ class TemplateManager
         }
     }
 
+    /***
+    **** Cette fonction cherche des tags définis dans $data dans la chaine de caracteres $text
+    **** Si elle en trouve un, elle le remplace et retourne le texte 
+    ***/
     private function computeText($text, array $data)
     {
         $APPLICATION_CONTEXT = ApplicationContext::getInstance();
 
+        
         $containsSummaryHtml = strpos($text, '[quote:summary_html]');
         $containsSummary     = strpos($text, '[quote:summary]');
-
+        $containsDestinationName = strpos($text, '[quote:destination_name]');
+        
         if ($containsSummaryHtml !== false) {
             $text = str_replace('[quote:summary_html]', Quote::renderHtml($this->_quoteFromRepository), $text);
         }
         if ($containsSummary !== false) {
             $text = str_replace('[quote:summary]', Quote::renderText($this->_quoteFromRepository), $text);
         }
+        if ($containsDestinationName !== false) {
+            $text = str_replace('[quote:destination_name]',$this->destinationOfQuote->countryName,$text);
+        }
 
-
-        (strpos($text, '[quote:destination_name]') !== false) and $text = str_replace('[quote:destination_name]',$this->destinationOfQuote->countryName,$text);
-
-
-        if (isset($this->destination))
+        
+        if (isset($this->destination)) {
             $text = str_replace('[quote:destination_link]', $this->usefulObject->url . '/' . $this->destination->countryName . '/quote/' . $this->_quoteFromRepository->id, $text);
-        else
+        } else {
             $text = str_replace('[quote:destination_link]', '', $text);
+        }
 
-        /*
-         * USER
-         * [user:*]
-         */
         $_user  = (isset($data['user'])  and ($data['user']  instanceof User))  ? $data['user']  : $APPLICATION_CONTEXT->getCurrentUser();
         if($_user) {
             (strpos($text, '[user:first_name]') !== false) and $text = str_replace('[user:first_name]'       , ucfirst(mb_strtolower($_user->firstname)), $text);
