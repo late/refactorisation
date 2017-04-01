@@ -42,24 +42,14 @@ class TemplateManager
     {
         $APPLICATION_CONTEXT = ApplicationContext::getInstance();
 
-         $containsSummaryHtml = strpos($text, '[quote:summary_html]');
-         $containsSummary     = strpos($text, '[quote:summary]');
+        $containsSummaryHtml = strpos($text, '[quote:summary_html]');
+        $containsSummary     = strpos($text, '[quote:summary]');
 
-         if ($containsSummaryHtml !== false || $containsSummary !== false) {
-            if ($containsSummaryHtml !== false) {
-                $text = str_replace(
-                    '[quote:summary_html]',
-                    Quote::renderHtml($this->_quoteFromRepository),
-                    $text
-                );
-            }
-            if ($containsSummary !== false) {
-                $text = str_replace(
-                    '[quote:summary]',
-                    Quote::renderText($this->_quoteFromRepository),
-                    $text
-                );
-            }
+        if ($containsSummaryHtml !== false) {
+            $text = str_replace('[quote:summary_html]', Quote::renderHtml($this->_quoteFromRepository), $text);
+        }
+        if ($containsSummary !== false) {
+            $text = str_replace('[quote:summary]', Quote::renderText($this->_quoteFromRepository), $text);
         }
 
 
